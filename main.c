@@ -23,7 +23,7 @@ int parse_circle(char* input) {
     const char* prefix = "circle(";
     char* start_ptr = input;
     int prefix_len = strlen(prefix);
-    if (strncmp(input, prefix, prefix_len) != 0) {
+    if (strncmp(input, prefix, prefix_len)) {
         handle_error("Error: expected 'circle('", start_ptr, 0);
         return -1;
     }
@@ -38,8 +38,8 @@ int parse_circle(char* input) {
     input = end_ptr + 1;
 
     double y = strtod(input, &end_ptr);
-    if (end_ptr == input || (*end_ptr != ',' && *end_ptr != ')')) {
-        handle_error("Error: expected ',' or ')'", start_ptr, end_ptr - start_ptr);
+    if (end_ptr == input || *end_ptr != ',' ) {
+        handle_error("Error: expected ','", start_ptr, end_ptr - start_ptr);
         return -1;
     }
     input = end_ptr + 1;
@@ -49,9 +49,9 @@ int parse_circle(char* input) {
         handle_error("Error: expected ')'", start_ptr, end_ptr - start_ptr);
         return -1;
     }
-
-    if (*(end_ptr + 1) != '\0') {
-        handle_error("Error: unexpected token", start_ptr, end_ptr + 1 - start_ptr);
+	end_ptr += 1; 
+    if (*end_ptr != '\0') {
+        handle_error("Error: unexpected token", start_ptr, end_ptr - start_ptr);
         return -1;
     }
 
