@@ -13,6 +13,16 @@ void handle_error(const char* error_msg, const char* input, int pos)
     fprintf(stderr, "^\n");
     fprintf(stderr, "%s at column %d\n", error_msg, pos);
 }
+
+char* lower_all(char* str)
+{
+    int i = 0;
+    while (str[i] != '\0') {
+        str[i] = tolower(str[i]);
+        i += 1;
+    }
+    return str;
+}
 // Функция для парсинга круга
 int parse_circle(char* input)
 {
@@ -61,8 +71,9 @@ int parse_circle(char* input)
     return 0;
 }
 // Функция для обработки входной строки
-int parse_input(const char* input)
+int parse_input(char* input)
 {
+    input = lower_all(input);
     if (strncmp(input, "circle", 6) == 0) {
         return parse_circle((char*)input);
     }
