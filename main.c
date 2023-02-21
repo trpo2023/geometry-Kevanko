@@ -20,7 +20,7 @@ int parse_circle(char* input)
     char* start_ptr = input;
     int prefix_len = strlen(prefix);
     if (strncmp(input, prefix, prefix_len)) {
-        handle_error("Error: expected 'circle('", start_ptr, 0);
+        handle_error("Error: expected '('", start_ptr, 7);
         return -1;
     }
     input += prefix_len;
@@ -50,11 +50,10 @@ int parse_circle(char* input)
     }
     printf("circle(%f, %f) and radius %f\n", x, y, radius);
 
-    const char* output = "output";
-    FILE* file = fopen(output, "a");
-    if (file == NULL) {
-        printf("Error: can't create output file:\n");
-        printf("%s\n", output);
+    const char* output_path = "output";
+    FILE* file = fopen(output_path, "a");
+    if (!file) {
+        printf("Error: can't create output file:\n%s\n", output_path);
         return -1;
     }
     fprintf(file, "circle(%f, %f) and radius %f\n", x, y, radius);
@@ -72,12 +71,11 @@ int parse_input(const char* input)
 }
 int main(int argv, char** argc)
 {
-    const char* filePath = "commands";
-    FILE* file = fopen(filePath, "r");
-    if (file == NULL) {
-        printf("Error: can't open commands file:\n");
-        printf("%s\n", filePath);
-        return 1;
+    const char* file_path = "commands";
+    FILE* file = fopen(file_path, "r");
+    if (!file) {
+        fprintf(stderr, "Error: can't open commands file:\n%s\n", file_path);
+        return -1;
     }
     char input[MAX_INPUT_LENGTH];
     while (!feof(file)) {
@@ -85,7 +83,7 @@ int main(int argv, char** argc)
         input[strcspn(input, "\n")]
                 = '\0'; // Удаляем символ переноса строки, если есть
         if (parse_input(input)) {
-            return 1;
+            return -1;
         }
     }
     fclose(file);
