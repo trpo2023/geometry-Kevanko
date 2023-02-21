@@ -13,7 +13,7 @@ void handle_error(const char* error_msg, const char* input, int pos)
     fprintf(stderr, "^\n");
     fprintf(stderr, "%s at column %d\n", error_msg, pos);
 }
-
+// Функция для перевода строки в нижний регистр
 char* lower_all(char* str)
 {
     int i = 0;
@@ -77,7 +77,7 @@ int parse_input(char* input)
     if (strncmp(input, "circle", 6) == 0) {
         return parse_circle((char*)input);
     }
-    handle_error("Error: unexpected token", input, 0);
+    handle_error("Error at column 0: expected 'circle', 'triangle' or 'polygon'", input, 0);
     return -1;
 }
 int main(int argv, char** argc)
