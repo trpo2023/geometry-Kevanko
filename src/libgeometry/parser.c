@@ -1,8 +1,5 @@
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#define MAX_INPUT_LENGTH 100
+#include <libgeometry/parser.h>
+
 // Функция для обработки ошибок и вывода сообщения
 void handle_error(const char* error_msg, const char* input, int pos)
 {
@@ -77,26 +74,9 @@ int parse_input(char* input)
     if (strncmp(input, "circle", 6) == 0) {
         return parse_circle((char*)input);
     }
-    handle_error("Error at column 0: expected 'circle', 'triangle' or 'polygon'", input, 0);
+    handle_error(
+            "Error at column 0: expected 'circle', 'triangle' or 'polygon'",
+            input,
+            0);
     return -1;
-}
-int main(int argv, char** argc)
-{
-    const char* file_path = "commands";
-    FILE* file = fopen(file_path, "r");
-    if (!file) {
-        fprintf(stderr, "Error: can't open commands file:\n%s\n", file_path);
-        return -1;
-    }
-    char input[MAX_INPUT_LENGTH];
-    while (!feof(file)) {
-        fgets(input, MAX_INPUT_LENGTH, file);
-        input[strcspn(input, "\n")]
-                = '\0'; // Удаляем символ переноса строки, если есть
-        if (parse_input(input)) {
-            return -1;
-        }
-    }
-    fclose(file);
-    return 0;
 }
