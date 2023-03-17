@@ -1,3 +1,5 @@
 *~
 *main
 *output
+*.d
+*.o
