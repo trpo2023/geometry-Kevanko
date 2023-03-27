@@ -1,8 +1,8 @@
 #include <ctype.h>
+#include <libgeometry/parser.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgeometry/parser.h>
 
 #define M_PI 3.14
 
@@ -118,4 +118,4 @@ int parse_input(char* input, const char* output_path)
             input,
             0);
     return 1;
-}
+
