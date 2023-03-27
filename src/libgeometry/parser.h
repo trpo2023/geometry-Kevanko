@@ -1,10 +1,4 @@
 #pragma once
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #define MAX_INPUT_LENGTH 100
 
 typedef struct Circle{
