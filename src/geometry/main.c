@@ -2,21 +2,30 @@
 
 int main()
 {
-    const char* file_path = "commands";
-    FILE* file = fopen(file_path, "r");
-    if (!file) {
+    const char* output_path = "output";
+    const char* input_path = "commands";
+
+    FILE* output_file = fopen(output_path, "w");
+    if (!output_file) {
+        fprintf(stderr, "Error: can't open output file:\n%s\n", output_path);
+        return 1;
+    }
+    fclose(output_file);
+
+    FILE* input_file = fopen(file_path, "r");
+    if (!input_file) {
         fprintf(stderr, "Error: can't open commands file:\n%s\n", file_path);
-        return -1;
+        return 1;
     }
     char input[MAX_INPUT_LENGTH];
-    while (!feof(file)) {
-        fgets(input, MAX_INPUT_LENGTH, file);
-        input[strcspn(input, "\n")]
-                = '\0'; // Удаляем символ переноса строки, если есть
-        if (parse_input(input)) {
-            return -1;
+    
+    while (!feof(input_file)) {
+        fgets(input, MAX_INPUT_LENGTH, input_path);
+        input[strcspn(input, "\n")] = '\0';
+        if (parse_input(input, output_path)) {
+            return 1;
         }
     }
-    fclose(file);
+    fclose(input_file);
     return 0;
-}
+
