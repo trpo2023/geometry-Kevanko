@@ -1,5 +1,10 @@
 #include <libgeometry/parser.h>
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 // Функция для обработки ошибок и вывода сообщения
 void handle_error(const char* error_msg, const char* input, int pos)
 {
