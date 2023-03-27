@@ -1,5 +1,8 @@
 #include <libgeometry/parser.h>
 
+#include <string.h>
+#include <stdio.h>
+
 int main()
 {
     const char* output_path = "output";
