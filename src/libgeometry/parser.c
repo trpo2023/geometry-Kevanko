@@ -20,15 +20,39 @@ char* lower_all(char* str)
     }
     return str;
 }
+
+void print_result(
+        const char* output_path, char* name, double perimetr, double area)
+{
+    static unsigned int counter;
+    FILE* file = fopen(output_path, "a");
+    if (!file) {
+        printf("Error: can't create output file:\n%s\n", output_path);
+        return;
+    }
+    counter++;
+    fprintf(file,
+            "%d. %s\n perimetr: %f\n area: %f\n\n",
+            counter,
+            name,
+            perimetr,
+            area);
+    fclose(file);
+    printf("%d. %s\n perimetr: %f\n area: %f\n\n",
+           counter,
+           name,
+           perimetr,
+           area);
+}
 // Функция для парсинга круга
-int parse_circle(char* input)
+Circle* parse_circle(char* input)
 {
     const char* prefix = "circle(";
     char* start_ptr = input;
     int prefix_len = strlen(prefix);
     if (strncmp(input, prefix, prefix_len)) {
         handle_error("Error: expected '('", start_ptr, 7);
-        return -1;
+        return NULL;
     }
     input += prefix_len;
     char* end_ptr;
@@ -36,47 +60,55 @@ int parse_circle(char* input)
     if (end_ptr == input || *end_ptr != ' ') {
         handle_error(
                 "Error: expected <double>", start_ptr, end_ptr - start_ptr);
-        return -1;
+        return NULL;
     }
     input = end_ptr + 1;
     double y = strtod(input, &end_ptr);
     if (end_ptr == input || *end_ptr != ',') {
         handle_error("Error: expected ','", start_ptr, end_ptr - start_ptr);
-        return -1;
+        return NULL;
     }
     input = end_ptr + 1;
     double radius = strtod(input, &end_ptr);
     if (end_ptr == input || *end_ptr != ')') {
         handle_error("Error: expected ')'", start_ptr, end_ptr - start_ptr);
-        return -1;
+        return NULL;
     }
     end_ptr += 1;
     if (*end_ptr != '\0') {
         handle_error("Error: unexpected token", start_ptr, end_ptr - start_ptr);
-        return -1;
+        return NULL;
     }
-    printf("circle(%f, %f) and radius %f\n", x, y, radius);
+    Circle* result = (Circle*)malloc(sizeof(Circle));
+    result->x = x;
+    result->y = y;
+    result->r = radius;
+    result->perimetr = 2 * 3.14 * result->r;
+    result->area = 3.14 * result->r * result->r;
 
-    const char* output_path = "output";
-    FILE* file = fopen(output_path, "a");
-    if (!file) {
-        printf("Error: can't create output file:\n%s\n", output_path);
-        return -1;
-    }
-    fprintf(file, "circle(%f, %f) and radius %f\n", x, y, radius);
-    fclose(file);
-    return 0;
+    return result;
 }
 // Функция для обработки входной строки
-int parse_input(char* input)
+int parse_input(char* input, const char* output_path)
 {
     input = lower_all(input);
     if (strncmp(input, "circle", 6) == 0) {
-        return parse_circle((char*)input);
+        Circle* circle = parse_circle(input);
+        if (circle) {
+            char name[50];
+            sprintf(name,
+                    "circle(%.1f %.1f %.1f)",
+                    circle->x,
+                    circle->y,
+                    circle->r);
+
+            print_result(output_path, name, circle->perimetr, circle->area);
+            return 0;
+        }
     }
     handle_error(
             "Error at column 0: expected 'circle', 'triangle' or 'polygon'",
             input,
             0);
-    return -1;
+    return 1;
 }
