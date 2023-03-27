@@ -118,4 +118,4 @@ int parse_input(char* input, const char* output_path)
             input,
             0);
     return 1;
-
+}
