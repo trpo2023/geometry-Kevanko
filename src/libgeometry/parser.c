@@ -50,6 +50,7 @@ void print_result(
            area);
 }
 // Функция для парсинга круга
+
 Circle* parse_circle(char* input)
 {
     const char* prefix = "circle(";
