@@ -3,6 +3,7 @@
 
 typedef struct Circle {
     double x, y, r, perimetr, area;
+    int exist;
 } Circle;
 
 // Функция для обработки ошибок и вывода сообщения
@@ -10,7 +11,7 @@ void handle_error(const char* error_msg, const char* input, int pos);
 // Функция для перевода строки в нижний регистр
 char* lower_all(char* str);
 // Функция для парсинга круга
-Circle* parse_circle(char* input);
+Circle parse_circle(char* input);
 // Функция для обработки входной строки
 int parse_input(char* input, const char* output_file);
 
