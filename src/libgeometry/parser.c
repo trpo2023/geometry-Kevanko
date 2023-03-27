@@ -117,5 +117,4 @@ int parse_input(char* input, const char* output_path)
             "Error at column 0: expected 'circle', 'triangle' or 'polygon'",
             input,
             0);
-    return 1;
-}
+
