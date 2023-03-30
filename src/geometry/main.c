@@ -11,7 +11,7 @@ int main()
 
     int status = is_input_files_exist(input_path, output_path);
     if (status) {
-        handle_error(status, " ");
+        handle_error(status, (char*)input_path);
         return status;
     }
 
