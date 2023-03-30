@@ -1,22 +1,63 @@
 #include <ctype.h>
-#include <libgeometry/parser.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define M_PI 3.14
+#include <libgeometry/parser.h>
 
-// Функция для обработки ошибок и вывода сообщения
-void handle_error(const char* error_msg, const char* input, int pos)
+int is_input_files_exist(const char* input_path, const char* output_path)
 {
-    fprintf(stderr, "%s\n", input);
-    for (int i = 0; i < pos; i++) {
-        fprintf(stderr, " ");
-    }
-    fprintf(stderr, "^\n");
-    fprintf(stderr, "%s at column %d\n", error_msg, pos);
+    FILE* output_file = fopen(output_path, "w");
+    if (!output_file)
+        return ERROR_FILE_OUTPUT;
+
+    fclose(output_file);
+
+    FILE* input_file = fopen(input_path, "r");
+
+    if (!input_file)
+        return ERROR_FILE_INPUT;
+
+    fclose(input_file);
+    return 0;
 }
-// Функция для перевода строки в нижний регистр
+
+void handle_error(int error_id, char* str)
+{
+    char* error_msg;
+    switch (error_id) {
+    case ERROR_FILE_OUTPUT:
+        error_msg = "Error: can't create output file";
+        break;
+    case ERROR_FILE_INPUT:
+        error_msg = "Error: can't open input file";
+        break;
+    case ERROR_PARSER_NAME:
+        error_msg = "Error: expected 'circle'";
+        break;
+    case ERROR_PARSER_LEFT_PARENTHESIS:
+        error_msg = "Error: expected '('";
+        break;
+    case ERROR_PARSER_RIGHT_PARENTHESIS:
+        error_msg = "Error: expected ')'";
+        break;
+    case ERROR_PARSER_COMMA:
+        error_msg = "Error: expected ','";
+        break;
+    case ERROR_PARSER_DOUBLE:
+        error_msg = "Error: expected <double>";
+        break;
+    case ERROR_PARSER_UNEXPECTED_TOKEN:
+        error_msg = "Error: unexpected token";
+        break;
+    default:
+        error_msg = "Error: something wrong";
+        break;
+    }
+    fprintf(stderr, "%s\n%s\n", error_msg, str);
+}
+
 char* lower_all(char* str)
 {
     int i = 0;
@@ -26,96 +67,118 @@ char* lower_all(char* str)
     }
     return str;
 }
-
-void print_result(
-        const char* output_path, char* name, double perimetr, double area)
+void print_circle(const char* output_path, Circle* circle)
 {
     static unsigned int counter;
     FILE* file = fopen(output_path, "a");
-    if (!file) {
-        printf("Error: can't create output file:\n%s\n", output_path);
-        return;
-    }
     counter++;
     fprintf(file,
-            "%d. %s\n perimetr: %f\n area: %f\n\n",
+            "%d. circle(%f %f, %f)\n perimetr: %f\n area: %f\n\n",
             counter,
-            name,
-            perimetr,
-            area);
+            circle->x,
+            circle->y,
+            circle->r,
+            circle->perimetr,
+            circle->area);
     fclose(file);
-    printf("%d. %s\n perimetr: %f\n area: %f\n\n",
+    printf("%d. circle(%f %f, %f)\n perimetr: %f\n area: %f\n\n",
            counter,
-           name,
-           perimetr,
-           area);
+           circle->x,
+           circle->y,
+           circle->r,
+           circle->perimetr,
+           circle->area);
 }
-// Функция для парсинга круга
-Circle parse_circle(char* input)
+int is_circle(char* str)
 {
-    Circle exit_error = {0.f, 0.f, 0.f, 0.f, 0.f, 0};
-    const char* prefix = "circle(";
-    char* start_ptr = input;
-    int prefix_len = strlen(prefix);
-    if (strncmp(input, prefix, prefix_len)) {
-        handle_error("Error: expected '('", start_ptr, 7);
-        return exit_error;
-    }
-    input += prefix_len;
-    char* end_ptr;
-    double x = strtod(input, &end_ptr);
-    if (end_ptr == input || *end_ptr != ' ') {
-        handle_error(
-                "Error: expected <double>", start_ptr, end_ptr - start_ptr);
-        return exit_error;
-    }
-    input = end_ptr + 1;
-    double y = strtod(input, &end_ptr);
-    if (end_ptr == input || *end_ptr != ',') {
-        handle_error("Error: expected ','", start_ptr, end_ptr - start_ptr);
-        return exit_error;
-    }
-    input = end_ptr + 1;
-    double radius = strtod(input, &end_ptr);
-    if (end_ptr == input || *end_ptr != ')') {
-        handle_error("Error: expected ')'", start_ptr, end_ptr - start_ptr);
-        return exit_error;
-    }
-    end_ptr += 1;
-    if (*end_ptr != '\0') {
-        handle_error("Error: unexpected token", start_ptr, end_ptr - start_ptr);
-        return exit_error;
-    }
-    Circle result
-            = {.x = x,
-               .y = y,
-               .r = radius,
-               .perimetr = 2 * M_PI * radius,
-               .area = M_PI * radius * radius,
-               .exist = 1};
-    return result;
+    if (strncmp(str, "circle", 6))
+        return ERROR_PARSER_NAME;
+    return 0;
 }
-// Функция для обработки входной строки
-int parse_input(char* input, const char* output_path)
-{
-    input = lower_all(input);
-    if (strncmp(input, "circle", 6) == 0) {
-        Circle circle = parse_circle(input);
-        if (circle.exist) {
-            char name[50];
-            sprintf(name,
-                    "circle(%.1f %.1f %.1f)",
-                    circle.x,
-                    circle.y,
-                    circle.r);
 
-            print_result(output_path, name, circle.perimetr, circle.area);
-            return 0;
-        }
+int is_left_parenthesis(char* str)
+{
+    if (strncmp(str + 6, "(", 1)) {
+        return ERROR_PARSER_LEFT_PARENTHESIS;
     }
-    handle_error(
-            "Error at column 0: expected 'circle', 'triangle' or 'polygon'",
-            input,
-            0);
-    return 1;
+    return 0;
+}
+
+int is_x_circle(char* str, double* x)
+{
+    char* number_end;
+    str += 7;
+    *x = strtod(str, &number_end);
+    if (number_end == str) {
+        return ERROR_PARSER_DOUBLE;
+    } else if (strncmp(number_end, " ", 1))
+        return ERROR_PARSER_UNEXPECTED_TOKEN;
+    return 0;
+}
+
+int is_y_circle(char* str, double* y)
+{
+    char* number_end;
+    str += 7;
+    strtod(str, &number_end);
+    str = number_end + 1;
+    *y = strtod(str, &number_end);
+    if (number_end == str) {
+        return ERROR_PARSER_DOUBLE;
+    } else if (strncmp(number_end, ",", 1))
+        return ERROR_PARSER_UNEXPECTED_TOKEN;
+    return 0;
+}
+
+int is_r_circle(char* str, double* r)
+{
+    char* number_end;
+    str += 7;
+    strtod(str, &number_end);
+    str = number_end + 1;
+    strtod(str, &number_end);
+    str = number_end + 1;
+    *r = strtod(str, &number_end);
+    if (number_end == str) {
+        return ERROR_PARSER_DOUBLE;
+    } else if (strncmp(number_end, ")", 1))
+        return ERROR_PARSER_RIGHT_PARENTHESIS;
+    str = number_end + 1;
+    if (strncmp(str, "\0", 1))
+        return ERROR_PARSER_UNEXPECTED_TOKEN;
+    return 0;
+}
+
+int parse_circle(char* str, Circle* out_values)
+{
+    double x, y, r;
+    int status;
+
+    status = is_circle(str);
+    if (status)
+        return status;
+
+    status = is_left_parenthesis(str);
+    if (status)
+        return status;
+
+    status = is_x_circle(str, &x);
+    if (status)
+        return status;
+
+    status = is_y_circle(str, &y);
+    if (status)
+        return status;
+
+    status = is_r_circle(str, &r);
+    if (status)
+        return status;
+
+    out_values->x = x;
+    out_values->y = y;
+    out_values->r = r;
+    out_values->perimetr = 2 * M_PI * r;
+    out_values->area = M_PI * r * r;
+
+    return 0;
 }
