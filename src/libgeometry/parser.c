@@ -89,6 +89,7 @@ void print_circle(const char* output_path, Circle* circle)
            circle->perimetr,
            circle->area);
 }
+
 int is_circle(char* str)
 {
     if (strncmp(str, "circle", 6))
@@ -149,6 +150,13 @@ int is_r_circle(char* str, double* r)
     return 0;
 }
 
+int calculate_circle(Circle* circle)
+{
+    circle->perimetr = 2 * M_PI * circle->r;
+    circle->area = M_PI * circle->r * circle->r;
+    return 0;
+}
+
 int parse_circle(char* str, Circle* out_values)
 {
     double x, y, r;
@@ -177,8 +185,6 @@ int parse_circle(char* str, Circle* out_values)
     out_values->x = x;
     out_values->y = y;
     out_values->r = r;
-    out_values->perimetr = 2 * M_PI * r;
-    out_values->area = M_PI * r * r;
 
     return 0;
 }
