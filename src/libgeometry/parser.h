@@ -5,7 +5,7 @@ typedef struct Circle {
     double x, y, r, perimetr, area;
 } Circle;
 
-enum ERRORS_ID {
+enum {
     ERROR_FILE_OUTPUT = 1,
     ERROR_FILE_INPUT,
     ERROR_PARSER_NAME,
@@ -27,6 +27,8 @@ int is_left_parenthesis(char* str);
 int is_x_circle(char* str, double* x);
 int is_y_circle(char* str, double* y);
 int is_r_circle(char* str, double* r);
-int parse_circle(char* str, Circle* out_values);
 // Функция для обработки входной строки
+int calculate_circle(Circle* circle);
+int parse_circle(char* str, Circle* out_values);
+// Функция для вывода круга
 void print_circle(const char* output_path, Circle* circle);
