@@ -17,19 +17,19 @@ int main()
 
     FILE* input_file = fopen(input_path, "r");
     char input[MAX_INPUT_LENGTH];
-    Circle* circle = (Circle*)malloc(sizeof(Circle));
-    while (!feof(input_file)) {
-        fgets(input, MAX_INPUT_LENGTH, input_file);
-        input[strcspn(input, "\n")] = '\0';
-        status = parse_circle(input, circle);
+    Circle circle;
+    while (fgets(input, MAX_INPUT_LENGTH, input_file)) {
+        int index = strcspn(input, "\n");
+        input[index] = '\0';
+        status = parse_circle(input, &circle);
         if (status) {
             handle_error(status, input);
             return status;
         } else {
-            print_circle(output_path, circle);
+            calculate_circle(&circle);
+            print_circle(output_path, &circle);
         }
     }
-    free(circle);
     fclose(input_file);
     return 0;
 }
