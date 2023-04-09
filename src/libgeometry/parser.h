@@ -29,6 +29,6 @@ int is_y_circle(char* str, double* y);
 int is_r_circle(char* str, double* r);
 // Функция для обработки входной строки
 int calculate_circle(Circle* circle);
-int parse_circle(char* str, Circle* out_values);
+void parse_circle(char* str, Circle* out_values);
 // Функция для вывода круга
 void print_circle(const char* output_path, Circle* circle);

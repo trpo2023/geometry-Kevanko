@@ -150,11 +150,10 @@ int is_r_circle(char* str, double* r)
     return 0;
 }
 
-int calculate_circle(Circle* circle)
+void calculate_circle(Circle* circle)
 {
     circle->perimetr = 2 * M_PI * circle->r;
     circle->area = M_PI * circle->r * circle->r;
-    return 0;
 }
 
 int parse_circle(char* str, Circle* out_values)
