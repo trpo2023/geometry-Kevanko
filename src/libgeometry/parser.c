@@ -105,48 +105,28 @@ int is_left_parenthesis(char* str)
     return 0;
 }
 
-int is_x_circle(char* str, double* x)
+int is_double(char* str_start, char** str_end, double* num)
 {
-    char* number_end;
-    str += 7;
-    *x = strtod(str, &number_end);
-    if (number_end == str) {
+    *num = strtod(str_start, str_end);
+    if (str_start == *str_end)
         return ERROR_PARSER_DOUBLE;
-    } else if (strncmp(number_end, " ", 1))
+    return 0;
+}
+
+int is_prefix(char* str_start, char* prefix)
+{
+    if (strncmp(str_start, prefix, strlen(prefix)))
         return ERROR_PARSER_UNEXPECTED_TOKEN;
     return 0;
 }
 
-int is_y_circle(char* str, double* y)
+int is_num_circle(char* str_start, char** str_end, char* ending, double* x)
 {
-    char* number_end;
-    str += 7;
-    strtod(str, &number_end);
-    str = number_end + 1;
-    *y = strtod(str, &number_end);
-    if (number_end == str) {
+    if (is_double(str_start, str_end, x))
         return ERROR_PARSER_DOUBLE;
-    } else if (strncmp(number_end, ",", 1))
+    else if (is_prefix(*str_end, ending))
         return ERROR_PARSER_UNEXPECTED_TOKEN;
-    return 0;
-}
-
-int is_r_circle(char* str, double* r)
-{
-    char* number_end;
-    str += 7;
-    strtod(str, &number_end);
-    str = number_end + 1;
-    strtod(str, &number_end);
-    str = number_end + 1;
-    *r = strtod(str, &number_end);
-    if (number_end == str) {
-        return ERROR_PARSER_DOUBLE;
-    } else if (strncmp(number_end, ")", 1))
-        return ERROR_PARSER_RIGHT_PARENTHESIS;
-    str = number_end + 1;
-    if (strncmp(str, "\0", 1))
-        return ERROR_PARSER_UNEXPECTED_TOKEN;
+    *str_end += 1;
     return 0;
 }
 
@@ -156,30 +136,29 @@ void calculate_circle(Circle* circle)
     circle->area = M_PI * circle->r * circle->r;
 }
 
-int parse_circle(char* str, Circle* out_values)
+int parse_circle(char* start, Circle* out_values)
 {
+    char** end = &start;
+    int status = 0;
     double x, y, r;
-    int status;
 
-    status = is_circle(str);
+    if (is_circle(start))
+        return ERROR_PARSER_NAME;
+    if (is_left_parenthesis(start))
+        return ERROR_PARSER_LEFT_PARENTHESIS;
+
+    status = is_num_circle(start + 7, end, " ", &x);
     if (status)
         return status;
-
-    status = is_left_parenthesis(str);
+    status = is_num_circle(start = *end, end, ",", &y);
     if (status)
         return status;
-
-    status = is_x_circle(str, &x);
+    status = is_num_circle(start = *end , end, ")", &r);
     if (status)
         return status;
-
-    status = is_y_circle(str, &y);
-    if (status)
-        return status;
-
-    status = is_r_circle(str, &r);
-    if (status)
-        return status;
+        
+    if (is_prefix(*end + 1, "\0"))
+        return ERROR_PARSER_UNEXPECTED_TOKEN;
 
     out_values->x = x;
     out_values->y = y;
