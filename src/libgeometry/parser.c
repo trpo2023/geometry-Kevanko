@@ -116,7 +116,7 @@ int is_double(char* str_start, char** str_end, double* num)
 int is_prefix(char* str_start, char* prefix)
 {
     size_t length = strlen(prefix);
-    length = !length? 1 : length;
+    length = !length ? 1 : length;
     if (strncmp(str_start, prefix, length))
         return ERROR_PARSER_UNEXPECTED_TOKEN;
     return 0;
