@@ -115,7 +115,9 @@ int is_double(char* str_start, char** str_end, double* num)
 
 int is_prefix(char* str_start, char* prefix)
 {
-    if (strncmp(str_start, prefix, strlen(prefix)))
+    size_t length = strlen(prefix);
+    length = !length ? 1 : length;
+    if (strncmp(str_start, prefix, length))
         return ERROR_PARSER_UNEXPECTED_TOKEN;
     return 0;
 }
@@ -157,7 +159,7 @@ int parse_circle(char* start, Circle* out_values)
     if (status)
         return status;
 
-    if (is_prefix(*end + 1, "\0"))
+    if (is_prefix(*end, "\0"))
         return ERROR_PARSER_UNEXPECTED_TOKEN;
 
     out_values->x = x;
