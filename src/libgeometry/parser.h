@@ -24,11 +24,11 @@ char* lower_all(char* str);
 // Функции для парсинга круга
 int is_circle(char* str);
 int is_left_parenthesis(char* str);
-int is_x_circle(char* str, double* x);
-int is_y_circle(char* str, double* y);
-int is_r_circle(char* str, double* r);
+int is_double(char* str_start, char** str_end, double* num);
+int is_prefix(char* str_start, char* prefix);
+int is_num_circle(char* str_start, char** str_end, char* ending, double* x);
 // Функция для обработки входной строки
-int calculate_circle(Circle* circle);
+void calculate_circle(Circle* circle);
 int parse_circle(char* str, Circle* out_values);
 // Функция для вывода круга
 void print_circle(const char* output_path, Circle* circle);
