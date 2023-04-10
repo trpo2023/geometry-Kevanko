@@ -153,10 +153,10 @@ int parse_circle(char* start, Circle* out_values)
     status = is_num_circle(start = *end, end, ",", &y);
     if (status)
         return status;
-    status = is_num_circle(start = *end , end, ")", &r);
+    status = is_num_circle(start = *end, end, ")", &r);
     if (status)
         return status;
-        
+
     if (is_prefix(*end + 1, "\0"))
         return ERROR_PARSER_UNEXPECTED_TOKEN;
 
