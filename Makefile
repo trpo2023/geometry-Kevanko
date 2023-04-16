@@ -3,7 +3,9 @@ LIB_NAME = libgeometry
 TEST_NAME = geometry_test
 
 CFLAGS = -Wall -Wextra -Werror
-CPPFLAGS = -I src -I thirdparty -MP -MMD -lm
+CPPFLAGS = -I src -I thirdparty -MP -MMD
+LDFLAGS =
+LDLIBS = -lm
 
 BIN_DIR = bin
 OBJ_DIR = obj
