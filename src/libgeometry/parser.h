@@ -1,8 +1,11 @@
 #pragma once
 #define MAX_INPUT_LENGTH 100
+#define MAX_OUTPUT_LENGTH 400
+#define MAX_CIRCLES 10
 
 typedef struct Circle {
     double x, y, r, perimetr, area;
+    int* intersects;
 } Circle;
 
 enum {
@@ -14,6 +17,7 @@ enum {
     ERROR_PARSER_COMMA,
     ERROR_PARSER_DOUBLE,
     ERROR_PARSER_UNEXPECTED_TOKEN,
+    ERROR_REALLOC
 };
 // Функция для проверки входных и выходных файлов
 int is_input_files_exist(const char* input_path, const char* output_path);
@@ -31,4 +35,6 @@ int is_num_circle(char* str_start, char** str_end, char* ending, double* x);
 void calculate_circle(Circle* circle);
 int parse_circle(char* str, Circle* out_values);
 // Функция для вывода круга
-void print_circle(const char* output_path, Circle* circle);
+void print_circles(const char* output_path, Circle* circles, int count);
+void get_intersects_circles(Circle* circles, int count);
+void free_circles(Circle* circles, int count);

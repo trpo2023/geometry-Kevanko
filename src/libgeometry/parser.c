@@ -60,6 +60,8 @@ void handle_error(int error_id, char* str)
 
 char* lower_all(char* str)
 {
+    if (!str)
+        return NULL;
     int i = 0;
     while (str[i] != '\0') {
         str[i] = tolower(str[i]);
@@ -67,41 +69,37 @@ char* lower_all(char* str)
     }
     return str;
 }
-void print_circle(const char* output_path, Circle* circle)
+void print_circles(const char* output_path, Circle* circles, int count)
 {
-    static unsigned int counter;
     FILE* file = fopen(output_path, "a");
-    counter++;
-    fprintf(file,
-            "%d. circle(%f %f, %f)\n perimetr: %f\n area: %f\n\n",
-            counter,
-            circle->x,
-            circle->y,
-            circle->r,
-            circle->perimetr,
-            circle->area);
+    for (int i = 0; i < count; i++) {
+        char output[MAX_OUTPUT_LENGTH];
+        sprintf(output,
+                "%d. circle(%f %f, %f)\n perimetr: %f\n area: "
+                "%f\n intersects:\n",
+                i + 1,
+                circles[i].x,
+                circles[i].y,
+                circles[i].r,
+                circles[i].perimetr,
+                circles[i].area);
+
+        for (int j = 0; j < count; j++) {
+            if (circles[i].intersects[j] == 1) {
+                sprintf(output + strlen(output), "\t%d. circle\n", j + 1);
+            }
+        }
+        sprintf(output + strlen(output), "\n");
+        fprintf(file, "%s", output);
+        printf("%s", output);
+    }
     fclose(file);
-    printf("%d. circle(%f %f, %f)\n perimetr: %f\n area: %f\n\n",
-           counter,
-           circle->x,
-           circle->y,
-           circle->r,
-           circle->perimetr,
-           circle->area);
 }
 
 int is_circle(char* str)
 {
     if (strncmp(str, "circle", 6))
         return ERROR_PARSER_NAME;
-    return 0;
-}
-
-int is_left_parenthesis(char* str)
-{
-    if (strncmp(str + 6, "(", 1)) {
-        return ERROR_PARSER_LEFT_PARENTHESIS;
-    }
     return 0;
 }
 
@@ -138,24 +136,54 @@ void calculate_circle(Circle* circle)
     circle->area = M_PI * circle->r * circle->r;
 }
 
+void get_intersects_circles(Circle* circles, int count)
+{
+    for (int i = 0; i < count; i++) {
+        int* intersects = (int*)calloc(sizeof(int), count);
+        for (int j = 0; j < count; j++) {
+            if (i == j)
+                continue;
+            double distance
+                    = sqrt(pow(circles[i].x - circles[j].x, 2)
+                           + pow(circles[i].y - circles[j].y, 2));
+            double sum_radii = circles[i].r + circles[j].r;
+
+            if (distance <= sum_radii) {
+                intersects[j] = 1;
+            }
+        }
+        circles[i].intersects = intersects;
+    }
+}
+
+void free_circles(Circle* circles, int count)
+{
+    for (int i = 0; i < count; i++) {
+        if (circles[i].intersects)
+            free(circles[i].intersects);
+    }
+    free(circles);
+}
 int parse_circle(char* start, Circle* out_values)
 {
+    start = lower_all(start);
     char** end = &start;
     int status = 0;
     double x, y, r;
 
     if (is_circle(start))
         return ERROR_PARSER_NAME;
-    if (is_left_parenthesis(start))
-        return ERROR_PARSER_LEFT_PARENTHESIS;
+
+    if (is_prefix(start + 6, "("))
+        return ERROR_PARSER_UNEXPECTED_TOKEN;
 
     status = is_num_circle(start + 7, end, " ", &x);
     if (status)
         return status;
-    status = is_num_circle(start = *end, end, ",", &y);
+    status = is_num_circle(*end, end, ",", &y);
     if (status)
         return status;
-    status = is_num_circle(start = *end, end, ")", &r);
+    status = is_num_circle(*end, end, ")", &r);
     if (status)
         return status;
 
