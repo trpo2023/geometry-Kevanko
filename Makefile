@@ -2,8 +2,10 @@ APP_NAME = geometry
 LIB_NAME = libgeometry
 TEST_NAME = geometry_test
 
-CFLAGS = -Wall -Wextra -Werror -lm
+CFLAGS = -Wall -Wextra -Werror
 CPPFLAGS = -I src -I thirdparty -MP -MMD
+LDFLAGS =
+LDLIBS = -lm
 
 BIN_DIR = bin
 OBJ_DIR = obj
@@ -34,7 +36,7 @@ all: $(APP_PATH)
 -include $(DEPS)
 
 $(APP_PATH): $(APP_OBJECTS) $(LIB_PATH)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS) 
 
 $(LIB_PATH): $(LIB_OBJECTS)
 	ar rcs $@ $^
@@ -46,7 +48,7 @@ $(OBJ_DIR)/%.o: %.c
 test: $(TEST_PATH)
 
 $(TEST_PATH): $(TEST_OBJECTS) $(LIB_PATH)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS) 
 	
 .PHONY: clean
 clean:
