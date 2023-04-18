@@ -98,7 +98,7 @@ void print_circles(const char* output_path, Circle* circles, int count)
 
 int is_circle(char* str)
 {
-    if (strncmp(str, "circle", 6))
+    if (strncmp(str, "circl", 6))
         return ERROR_PARSER_NAME;
     return 0;
 }
@@ -175,17 +175,17 @@ int parse_circle(char* start, Circle* out_values)
         return ERROR_PARSER_NAME;
 
     if (is_prefix(start + 6, "("))
-        return ERROR_PARSER_UNEXPECTED_TOKEN;
+        return ERROR_PARSER_LEFT_PARENTHESIS;
 
     status = is_num_circle(start + 7, end, " ", &x);
     if (status)
-        return status;
+        return ERROR_PARSER_UNEXPECTED_TOKEN;
     status = is_num_circle(*end, end, ",", &y);
     if (status)
-        return status;
+        return ERROR_PARSER_COMMA;
     status = is_num_circle(*end, end, ")", &r);
     if (status)
-        return status;
+        return ERROR_PARSER_RIGHT_PARENTHESIS;
 
     if (is_prefix(*end, "\0"))
         return ERROR_PARSER_UNEXPECTED_TOKEN;

@@ -79,7 +79,6 @@ CTEST(TEST_is_num_circle, simple_num_circle)
 
 CTEST(TEST_parse_circle, simple_parse_circle)
 {
-    /*                               ._.            */
     char cool_circle[] = "cIrClE(1        5,     25)";
     char bad_circle[] = "cirlce(1 5, 25)";
     char very_bad_circle[] = "circle(1 5, 25)f";
